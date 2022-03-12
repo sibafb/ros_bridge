@@ -15,44 +15,44 @@
     <body>
     <script type="text/javascript">
     <!--
-if(!Listener){
-    var Listener = {
-        ros : null,
-        name : "",
-        init : function(){
-            this.ros = new ROSLIB.Ros();
-            this.ros.on('error', function(error) {
-                document.getElementById('state').innerHTML = "Error";
-            });
-            this.ros.on('connection', function(error) {
-                document.getElementById('state').innerHTML = "Connect";
-            });
-            this.ros.on('close', function(error) {
-                document.getElementById('state').innerHTML = "Close";
-            });
-            this.ros.connect('ws://' + location.hostname + ':9090');
+    if(!Listener){
+        var Listener = {
+            ros : null,
+            name : "",
+            init : function(){
+                this.ros = new ROSLIB.Ros();
+                this.ros.on('error', function(error) {
+                    document.getElementById('state').innerHTML = "Error";
+                });
+                this.ros.on('connection', function(error) {
+                    document.getElementById('state').innerHTML = "Connect";
+                });
+                this.ros.on('close', function(error) {
+                    document.getElementById('state').innerHTML = "Close";
+                });
+                this.ros.connect('ws://' + location.hostname + ':9090');
 
-            var sub = new ROSLIB.Topic({
-                ros : this.ros,
-                name : '/chatter',
-                messageType : 'std_msgs/String'
-            });
-            sub.subscribe(function(message) {
-                var res = message.data;
-                var el = document.createElement("p");
-                el.innerHTML = res
-                document.getElementById("talk").appendChild(el);
-            });
+                var sub = new ROSLIB.Topic({
+                    ros : this.ros,
+                    name : '/chatter',
+                    messageType : 'std_msgs/String'
+                });
+                sub.subscribe(function(message) {
+                    var res = message.data;
+                    var el = document.createElement("p");
+                    el.innerHTML = res
+                    document.getElementById("talk").appendChild(el);
+                });
+            }
         }
-    }
-    Listener.init();
+        Listener.init();
 
-    window.onload = function(){
-    };
-    window.onunload = function(){
-        Listener.ros.close();
-    };
-}
+        window.onload = function(){
+        };
+        window.onunload = function(){
+            Listener.ros.close();
+        };
+    }
         //-->
     </script>
     <p>status： <label id="state">Disconnect</label></p>

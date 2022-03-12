@@ -16,44 +16,44 @@
     <script type="text/javascript">
 
         <!--
-if(!Talker){
-    var Talker = {
-        ros : null,
-        name : "",
-        init : function(){
-            this.ros = new ROSLIB.Ros();
-            this.ros.on('error', function(error) {
-                document.getElementById('state').innerHTML = "Error";
-            });
-            this.ros.on('connection', function(error) {
-                document.getElementById('state').innerHTML = "Connect";
-            });
-            this.ros.on('close', function(error) {
-                document.getElementById('state').innerHTML = "Close";
-            });
-            this.ros.connect('ws://' + location.hostname + ':9090');
-        },
-        send : function(){
-            if(document.getElementById("comment").value.length == 0) return;
-            var comment = document.getElementById("comment").value;
-            var pub = new ROSLIB.Topic({
-                ros : this.ros,
-                name : '/chatter',
-                messageType : 'std_msgs/String'
-            });
+        if(!Talker){
+            var Talker = {
+                ros : null,
+                name : "",
+                init : function(){
+                    this.ros = new ROSLIB.Ros();
+                    this.ros.on('error', function(error) {
+                        document.getElementById('state').innerHTML = "Error";
+                    });
+                    this.ros.on('connection', function(error) {
+                        document.getElementById('state').innerHTML = "Connect";
+                    });
+                    this.ros.on('close', function(error) {
+                        document.getElementById('state').innerHTML = "Close";
+                    });
+                    this.ros.connect('ws://' + location.hostname + ':9090');
+                },
+                send : function(){
+                    if(document.getElementById("comment").value.length == 0) return;
+                    var comment = document.getElementById("comment").value;
+                    var pub = new ROSLIB.Topic({
+                        ros : this.ros,
+                        name : '/chatter',
+                        messageType : 'std_msgs/String'
+                    });
 
-            var str = new ROSLIB.Message({data : comment});
-            pub.publish(str);
+                    var str = new ROSLIB.Message({data : comment});
+                    pub.publish(str);
+                }
+            }
+            Talker.init();
+
+            window.onload = function(){
+            };
+            window.onunload = function(){
+                Talker.ros.close();
+            };
         }
-    }
-    Talker.init();
-
-    window.onload = function(){
-    };
-    window.onunload = function(){
-        Talker.ros.close();
-    };
-}
         //-->
     </script>
     <p>status： <label id="state">Disconnect</label></p>
@@ -63,5 +63,16 @@ if(!Talker){
       <input type="text" id="comment" size="20" />
       <input type="submit" value="send" id="btn" /><br/>
     </form>
+    <style>
+    .example{
+    width: 300px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #68779a;
+    background: #cbe8fa;
+    cursor: pointer;
+    }
+    </style>
+    <input type="submit" value="ボタン" class="example">
   </body>
 </html>
