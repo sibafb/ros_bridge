@@ -76,24 +76,6 @@
           }
         //-->
     </script>
-    <p>status： <label id="state">Disconnect</label></p>
-
-    <form action="javascript:Talker.send();" id="ui">
-      <label>Comment: </label>
-      <input type="text" id="comment" size="20" />
-      <input type="submit" value="send" id="btn" /><br/>
-    </form>
-    <style>
-    .example{
-    width: 300px;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #68779a;
-    background: #cbe8fa;
-    cursor: pointer;
-    }
-    </style>
-    <input type="submit" value="ボタン" class="example">
 
     <style>
     .button{
@@ -122,9 +104,7 @@
     .button:active{
       background:#33FFFF;
     }
-    .flex-centor{
-      display:flex;
-      justify-content:space-around;
+    .centor{
       padding:1em;
       position: absolute;
       top: 50%;
@@ -132,15 +112,28 @@
       transform: translateY(-50%) translateX(-50%);
       -webkit- transform: translateY(-50%) translateX(-50%);
     }
-    </style>
+    .flex{
+      display:flex;
+      justify-content:space-around;
+    }
+    .title{
 
-    <div class="flex-centor">
-      <form action="javascript:Talker.send_start();" id="start">
-        <input type="submit" value="START" id="btn" class="button"><br/>
-      </form>
-      <form action="javascript:Talker.send_pause();" id="ui">
-        <input type="submit" value="PAUSE" id="btn" class="button"><br/>
-      </form>
+      text-align:center
+    }
+    </style>
+    <header>
+      <h1 class="title"> Snack served on a robot </h1>
+    </header>
+    <div class="centor">
+      <div class="flex">
+        <form action="javascript:Talker.send_start();" id="start">
+          <input type="submit" value="START" id="btn" class="button"><br/>
+        </form>
+        <form action="javascript:Talker.send_pause();" id="ui">
+          <input type="submit" value="PAUSE" id="btn" class="button"><br/>
+        </form>
+      </div>
+      <p style="text-align:center" >status： <label id="state">Disconnect</label></p>
     </div>
   </body>
 </html>
