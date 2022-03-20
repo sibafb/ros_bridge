@@ -9,7 +9,8 @@ sudo apt-get install ros-$ROS_DISTRO-roswww
 roslaunch ros_bridge bridge.launch
 ```
 - access 
-  - open beowser and access http://localhost:8085/ros_bridge(Package name)/pub_goal_and_stop.html
+  - open beowser and access http://localhost:8085/ros_bridge/pub_goal_and_stop.html
+  - "ros_bridge" is Package name. If you changed that, follow it.
 
 
 ### 使い方
