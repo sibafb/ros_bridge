@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="ros_bridge" name="bridge" type="ros_bridge_client.py" />
+</launch>
