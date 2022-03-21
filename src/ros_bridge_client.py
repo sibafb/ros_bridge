@@ -1,11 +1,12 @@
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import time
 from roslibpy import Message, Ros, Topic
 import time
 
 class rosbridge_client:
     def __init__(self):
-        self.ros_client = Ros('127.0.0.1', 9090)
+        self.ros_client = Ros('192.168.XXX.XXX', 9090)
         print("wait for server")
         self.publisher = Topic(self.ros_client, '/cmd_vel', 'geometry_msgs/Twist')
         self.listener = Topic(self.ros_client, '/odom', 'nav_msgs/Odometry')
