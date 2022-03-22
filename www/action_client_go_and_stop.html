@@ -16,67 +16,75 @@
 
           var ActionClient = {
               ros : null,
-              action_client : null, 
-              name : "",
+              action_client : null,
               
               init : function(){
-                  this.ros = new ROSLIB.Ros({url : ros_server});
-                  this.ros.on('error', function(error) {
-                      document.getElementById('state').innerHTML = "Error";
-                  });
-                  this.ros.on('connection', function(error) {
-                      document.getElementById('state').innerHTML = "Connect";
-                  });
-                  this.ros.on('close', function(error) {
-                      document.getElementById('state').innerHTML = "Close";
-                  });
-                  this.ros.connect('ws://' + location.hostname + ':9090');
+                this.ros = new ROSLIB.Ros({url : ros_server});
+                this.ros.on('error', function(error) {
+                    document.getElementById('state').innerHTML = "Error";
+                });
+                this.ros.on('connection', function(error) {
+                    document.getElementById('state').innerHTML = "Connect";
+                });
+                this.ros.on('close', function(error) {
+                    document.getElementById('state').innerHTML = "Close";
+                });
+                this.ros.connect('ws://' + location.hostname + ':9090');
 
-                  this.action_client = new ROSLIB.ActionClient({
-                    ros : ros,
-                    serverName : actionserver_name,
-                    actionName : 'move_base_msgs/MoveBaseActionGoal'
-                  });
-              },
-              send : function(){
-                  if(document.getElementById("comment").value.length == 0) return;
-                  var comment = document.getElementById("comment").value;
-                  var pub = new ROSLIB.Topic({
-                      ros : this.ros,
-                      name : '/chatter',
-                      messageType : 'std_msgs/String'
-                  });
+                this.action_client = new ROSLIB.ActionClient({
+                  ros : ros,
+                  serverName : actionserver_name,
+                  actionName : 'move_base_msgs/MoveBaseActionGoal'
+                });
 
-                  var str = new ROSLIB.Message({data : comment});
-                  pub.publish(str);
+                this.goal = new ROSLIB.Goal({
+                  actionClient : actionClient,
+                  goalMessage : {
+                    target_pose : {
+                      header : {
+                        frame_id : '/map'
+                      },
+                    pose : pose
+                    }
+                  }
+                });
               },
-              send_start : function(){
-                  var pub = new ROSLIB.Topic({
-                      ros : this.ros,
-                      name : '/nav_con',
-                      messageType : 'std_msgs/String'
-                  });
-                  const start = 'START';
-                  var str = new ROSLIB.Message({data : start});
-                  pub.publish(str);
+              send_goal : function(){
+                var positionVec3 = new ROSLIB.Vector3(null);
+                var orientation = new ROSLIB.Quaternion({x:0, y:0, z:0, w:1.0});
+
+                positionVec3.x = 3.0;
+                positionVec3.y = 0.0;
+
+                var pose = new ROSLIB.Pose({
+                  position : positionVec3,
+                  orientation : orientation
+                });
+
+                var goal = new ROSLIB.Goal({
+                  actionClient : actionClient,
+                  goalMessage : {
+                    target_pose : {
+                      header : {
+                        frame_id : '/map'
+                      },
+                      pose : pose
+                    }
+                  }
+                });
+                goal.send()
               },
-              send_pause : function(){
-                  var pub = new ROSLIB.Topic({
-                      ros : this.ros,
-                      name : '/nav_con',
-                      messageType : 'std_msgs/String'
-                  });
-                  const start = 'PAUSE';
-                  var str = new ROSLIB.Message({data : start});
-                  pub.publish(str);
+              cancelGoal : function(){
+                // cancel the current goal
+                //goal.cancel();
               }
           }
-          Talker.init();
+          ActionClient.init();
 
           window.onload = function(){
           };
           window.onunload = function(){
-              Talker.ros.close();
+            ActionClient.ros.close();
           };
       }
     </script>
