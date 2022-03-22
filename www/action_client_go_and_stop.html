@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <title>ROS WEB Actionlib client</title>
+    <script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+  </head>
+
+  <body>
+    <script type="text/javascript">
+      if(!ActionClient){
+          const ros_server = 'ws://localhost:9090';
+          const actionserver_name = 'move_base';
+          var ActionClient = {
+              ros : null,
+              name : "",
+              
+              init : function(){
+                  this.ros = new ROSLIB.Ros({url : ros_server});
+                  this.ros.on('error', function(error) {
+                      document.getElementById('state').innerHTML = "Error";
+                  });
+                  this.ros.on('connection', function(error) {
+                      document.getElementById('state').innerHTML = "Connect";
+                  });
+                  this.ros.on('close', function(error) {
+                      document.getElementById('state').innerHTML = "Close";
+                  });
+                  this.ros.connect('ws://' + location.hostname + ':9090');
+              },
+              send : function(){
+                  if(document.getElementById("comment").value.length == 0) return;
+                  var comment = document.getElementById("comment").value;
+                  var pub = new ROSLIB.Topic({
+                      ros : this.ros,
+                      name : '/chatter',
+                      messageType : 'std_msgs/String'
+                  });
+
+                  var str = new ROSLIB.Message({data : comment});
+                  pub.publish(str);
+              },
+              send_start : function(){
+                  var pub = new ROSLIB.Topic({
+                      ros : this.ros,
+                      name : '/nav_con',
+                      messageType : 'std_msgs/String'
+                  });
+                  const start = 'START';
+                  var str = new ROSLIB.Message({data : start});
+                  pub.publish(str);
+              },
+              send_pause : function(){
+                  var pub = new ROSLIB.Topic({
+                      ros : this.ros,
+                      name : '/nav_con',
+                      messageType : 'std_msgs/String'
+                  });
+                  const start = 'PAUSE';
+                  var str = new ROSLIB.Message({data : start});
+                  pub.publish(str);
+              }
+          }
+          Talker.init();
+
+          window.onload = function(){
+          };
+          window.onunload = function(){
+              Talker.ros.close();
+          };
+      }
+    </script>
+
+    <style>
+    .button{
+      background:#0066FF;
+      color:white;
+      padding:1em 1em;
+      border:black 0.3px solid;ne;
+      border-radius:15px;
+      text-decoration:none;
+      font-size:1.5em;
+      margin-right:1em;
+    }
+    .start_button{
+      background:#336699;
+      color:#EEE8AA;
+      padding:1em 1em;
+      border:black 2px solid;
+      border-radius:15px;
+      text-decoration:none;
+      font-size:1.5em;
+      margin-right:1em;
+    }
+    .button:hover{
+      background:#0066CC;
+    }
+    .button:active{
+      background:#33FFFF;
+    }
+    .centor{
+      padding:1em;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateY(-50%) translateX(-50%);
+      -webkit- transform: translateY(-50%) translateX(-50%);
+    }
+    .flex{
+      display:flex;
+      justify-content:space-around;
+    }
+    .title{
+
+      text-align:center
+    }
+    </style>
+    <header>
+      <h1 class="title"> Snack served on a robot </h1>
+    </header>
+    <div class="centor">
+      <div class="flex">
+        <form action="javascript:Talker.send_start();" id="start">
+          <input type="submit" value="START" id="btn" class="button"><br/>
+        </form>
+        <form action="javascript:Talker.send_pause();" id="ui">
+          <input type="submit" value="PAUSE" id="btn" class="button"><br/>
+        </form>
+      </div>
+      <p style="text-align:center" >status： <label id="state">Disconnect</label></p>
+    </div>
+  </body>
+</html>
