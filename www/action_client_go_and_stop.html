@@ -10,10 +10,13 @@
   <body>
     <script type="text/javascript">
       if(!ActionClient){
+
           const ros_server = 'ws://localhost:9090';
           const actionserver_name = 'move_base';
+
           var ActionClient = {
               ros : null,
+              action_client : null, 
               name : "",
               
               init : function(){
@@ -28,6 +31,12 @@
                       document.getElementById('state').innerHTML = "Close";
                   });
                   this.ros.connect('ws://' + location.hostname + ':9090');
+
+                  this.action_client = new ROSLIB.ActionClient({
+                    ros : ros,
+                    serverName : actionserver_name,
+                    actionName : 'move_base_msgs/MoveBaseActionGoal'
+                  });
               },
               send : function(){
                   if(document.getElementById("comment").value.length == 0) return;
