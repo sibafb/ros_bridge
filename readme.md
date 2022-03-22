@@ -72,4 +72,7 @@
 
 - [roslibpy](https://roslibpy.readthedocs.io/en/latest/examples.html)
 
+- [roslibjs](http://wiki.ros.org/roslibjs)
+- [roslibjsの基本的な使い方](https://qiita.com/daigakupotato/items/bb44c070d4304caa4bf1)
+
 ## 使い方
