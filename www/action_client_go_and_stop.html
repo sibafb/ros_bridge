@@ -12,7 +12,7 @@
       if(!ActionClient){
 
           const ros_server = 'ws://localhost:9090';
-          const actionserver_name = 'move_base';
+          const actionserver_name = '/create1/move_base';
 
           var ActionClient = {
               ros : null,
@@ -31,48 +31,41 @@
                 });
                 this.ros.connect('ws://' + location.hostname + ':9090');
 
+                console.log('Start action client.');
+
                 this.action_client = new ROSLIB.ActionClient({
-                  ros : ros,
+                  ros : this.ros,
                   serverName : actionserver_name,
                   actionName : 'move_base_msgs/MoveBaseActionGoal'
-                });
-
-                this.goal = new ROSLIB.Goal({
-                  actionClient : actionClient,
-                  goalMessage : {
-                    target_pose : {
-                      header : {
-                        frame_id : '/map'
-                      },
-                    pose : pose
-                    }
-                  }
                 });
               },
               send_goal : function(){
                 var positionVec3 = new ROSLIB.Vector3(null);
                 var orientation = new ROSLIB.Quaternion({x:0, y:0, z:0, w:1.0});
 
-                positionVec3.x = 3.0;
-                positionVec3.y = 0.0;
+                positionVec3.x = 6.1;
+                positionVec3.y = 0.8;
 
-                var pose = new ROSLIB.Pose({
+                console.log('Define pose');
+                var target_pose = new ROSLIB.Pose({
                   position : positionVec3,
                   orientation : orientation
                 });
 
                 var goal = new ROSLIB.Goal({
-                  actionClient : actionClient,
+                  actionClient : this.action_client,
                   goalMessage : {
                     target_pose : {
                       header : {
                         frame_id : '/map'
                       },
-                      pose : pose
+                      pose : target_pose
                     }
                   }
                 });
+                console.log('goal.send.');
                 goal.send()
+                console.log('goal.send. finished');
               },
               cancelGoal : function(){
                 // cancel the current goal
@@ -138,10 +131,10 @@
     </header>
     <div class="centor">
       <div class="flex">
-        <form action="javascript:Talker.send_start();" id="start">
+        <form action="javascript:ActionClient.send_goal();" id="start">
           <input type="submit" value="START" id="btn" class="button"><br/>
         </form>
-        <form action="javascript:Talker.send_pause();" id="ui">
+        <form action="javascript:ActionClient.send_pause();" id="ui">
           <input type="submit" value="PAUSE" id="btn" class="button"><br/>
         </form>
       </div>
