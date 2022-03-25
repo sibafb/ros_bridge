@@ -17,6 +17,10 @@
           var ActionClient = {
               ros : null,
               action_client : null,
+              lisner_feedback : null,
+              lisner_status : null,
+              lisner_result : null,
+              goal : null,
               
               init : function(){
                 this.ros = new ROSLIB.Ros({url : ros_server});
@@ -33,11 +37,20 @@
 
                 console.log('Start action client.');
 
+                this.lisner_status = new  ROSLIB.Topic({
+                  ros : this.ros,
+                  name : '/move_base/status',
+                  messageType : 'actionlib_msgs/GoalStatusArray'
+                });
+
                 this.action_client = new ROSLIB.ActionClient({
                   ros : this.ros,
                   serverName : actionserver_name,
-                  actionName : 'move_base_msgs/MoveBaseActionGoal'
+                  actionName : 'move_base_msgs/MoveBaseAction'
                 });
+
+                this.lisner_status.subscribe(function(fb_){ this.cb_status });
+
               },
               send_goal : function(){
                 var positionVec3 = new ROSLIB.Vector3(null);
@@ -45,6 +58,9 @@
 
                 positionVec3.x = 6.1;
                 positionVec3.y = 0.8;
+                
+                document.getElementById('goal_x').innerHTML = positionVec3.x;
+                document.getElementById('goal_y').innerHTML = positionVec3.y;
 
                 console.log('Define pose');
                 var target_pose = new ROSLIB.Pose({
@@ -52,24 +68,29 @@
                   orientation : orientation
                 });
 
-                var goal = new ROSLIB.Goal({
+                this.goal = new ROSLIB.Goal({
                   actionClient : this.action_client,
                   goalMessage : {
                     target_pose : {
                       header : {
-                        frame_id : '/map'
+                        frame_id : 'map'
                       },
                       pose : target_pose
                     }
                   }
                 });
                 console.log('goal.send.');
-                goal.send()
+                this.goal.send()
                 console.log('goal.send. finished');
               },
               cancelGoal : function(){
-                // cancel the current goal
-                //goal.cancel();
+                this.goal.cancel();
+              },
+              cb_status : function(){
+                document.getElementById('move_base status').innerHTML = this.lisner_status.base_position.pose.position.x
+              },
+              cb_result : function(){
+
               }
           }
           ActionClient.init();
@@ -134,10 +155,14 @@
         <form action="javascript:ActionClient.send_goal();" id="start">
           <input type="submit" value="START" id="btn" class="button"><br/>
         </form>
-        <form action="javascript:ActionClient.send_pause();" id="ui">
+        <form action="javascript:ActionClient.cancelGoal();" id="ui">
           <input type="submit" value="PAUSE" id="btn" class="button"><br/>
         </form>
       </div>
+      <p style="text-align:center" >goal point x： <label id="goal_x">0</label>    y： <label id="goal_y">0</label></p>
+      <p style="text-align:center" >move_base/feedback x： <label id="pos_x">0</label>    y： <label id="pos_y">0</label></p>
+      <p style="text-align:center" >move_base/status： <label id="move_base status">0</label></p>
+      <p style="text-align:center" >move_base/result  </p>
       <p style="text-align:center" >status： <label id="state">Disconnect</label></p>
     </div>
   </body>
