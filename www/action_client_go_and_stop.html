@@ -40,6 +40,7 @@
 
                 this.lisner_status = new  ROSLIB.Topic({
                   ros : this.ros,
+                  name : '/create1/move_base/status',
                   messageType : 'actionlib_msgs/GoalStatusArray'
                 });
                 this.action_client = new ROSLIB.ActionClient({
@@ -51,6 +52,7 @@
                 this.lisner_status.subscribe(function(fb_){ this.cb_status });
 
               },
+              set_wp_list: function(){
 
                 var positionVec3 = new ROSLIB.Vector3(null);
                 var orientation = new ROSLIB.Quaternion({x:0, y:0, z:0, w:1.0});
@@ -60,6 +62,7 @@
 
                 wp_list.push
               },
+              send_goal : function(){
 
 
 
