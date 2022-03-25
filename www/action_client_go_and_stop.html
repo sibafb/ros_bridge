@@ -21,6 +21,7 @@
               lisner_status : null,
               lisner_result : null,
               goal : null,
+              wp_list : [],
               
               init : function(){
                 this.ros = new ROSLIB.Ros({url : ros_server});
@@ -39,25 +40,29 @@
 
                 this.lisner_status = new  ROSLIB.Topic({
                   ros : this.ros,
-                  name : '/move_base/status',
                   messageType : 'actionlib_msgs/GoalStatusArray'
                 });
-
                 this.action_client = new ROSLIB.ActionClient({
                   ros : this.ros,
                   serverName : actionserver_name,
                   actionName : 'move_base_msgs/MoveBaseAction'
                 });
-
+                
                 this.lisner_status.subscribe(function(fb_){ this.cb_status });
 
               },
-              send_goal : function(){
+
                 var positionVec3 = new ROSLIB.Vector3(null);
                 var orientation = new ROSLIB.Quaternion({x:0, y:0, z:0, w:1.0});
 
                 positionVec3.x = 6.1;
                 positionVec3.y = 0.8;
+
+                wp_list.push
+              },
+
+
+
                 
                 document.getElementById('goal_x').innerHTML = positionVec3.x;
                 document.getElementById('goal_y').innerHTML = positionVec3.y;
@@ -87,7 +92,8 @@
                 this.goal.cancel();
               },
               cb_status : function(){
-                document.getElementById('move_base status').innerHTML = this.lisner_status.base_position.pose.position.x
+                document.getElementById('move_base status').innerHTML = this.action_client.omitStatus;
+                console.log('cb_status.');
               },
               cb_result : function(){
 
