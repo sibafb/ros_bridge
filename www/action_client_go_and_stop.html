@@ -51,7 +51,7 @@
                 
                 this.lisner_status.subscribe(function(fb_){ this.cb_status });
 
-                this.wp_list(6.1,0.8);
+                this.pushto_wp_list(6.1,0.8,1.0);
 
               },
               pushto_wp_list: function(x, y, w){
@@ -72,14 +72,12 @@
               },
               send_goal : function(){
 
-                document.getElementById('goal_x').innerHTML = positionVec3.x;
-                document.getElementById('goal_y').innerHTML = positionVec3.y;
+                wp = this.wp_list.pop()
+
+                document.getElementById('goal_x').innerHTML = wp.position.x;
+                document.getElementById('goal_y').innerHTML = wp.position.y;
 
                 console.log('Define pose');
-                var target_pose = new ROSLIB.Pose({
-                  position : positionVec3,
-                  orientation : orientation
-                });
 
                 this.goal = new ROSLIB.Goal({
                   actionClient : this.action_client,
@@ -88,19 +86,18 @@
                       header : {
                         frame_id : 'map'
                       },
-                      pose : target_pose
+                      pose : wp
                     }
                   }
                 });
                 console.log('goal.send.');
                 this.goal.send()
-                console.log('goal.send. finished');
               },
               cancelGoal : function(){
                 this.goal.cancel();
               },
               cb_status : function(){
-                document.getElementById('move_base status').innerHTML = this.action_client.omitStatus;
+                //document.getElementById('move_base status').innerHTML = this.action_client.omitStatus;
                 console.log('cb_status.');
               }
           }
@@ -171,6 +168,6 @@
         </form>
       </div>
       <p style="text-align:center" >goal point x： <label id="goal_x">0</label>    y： <label id="goal_y">0</label></p>
-    </div>
+      <p style="text-align:center" >status： <label id="state">Disconnect</label></p>
   </body>
 </html>
