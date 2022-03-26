@@ -51,22 +51,27 @@
                 
                 this.lisner_status.subscribe(function(fb_){ this.cb_status });
 
+                this.wp_list(6.1,0.8);
+
               },
-              set_wp_list: function(){
+              pushto_wp_list: function(x, y, w){
 
                 var positionVec3 = new ROSLIB.Vector3(null);
-                var orientation = new ROSLIB.Quaternion({x:0, y:0, z:0, w:1.0});
+                var orientation = new ROSLIB.Quaternion({x:0, y:0, z:0, w:w});
 
-                positionVec3.x = 6.1;
-                positionVec3.y = 0.8;
+                positionVec3.x = x;
+                positionVec3.y = y;
+                
+                var target_pose = new ROSLIB.Pose({
+                  position : positionVec3,
+                  orientation : orientation
+                });
+                
+                wp_list.push(target_pose)
 
-                wp_list.push
               },
               send_goal : function(){
 
-
-
-                
                 document.getElementById('goal_x').innerHTML = positionVec3.x;
                 document.getElementById('goal_y').innerHTML = positionVec3.y;
 
@@ -97,9 +102,6 @@
               cb_status : function(){
                 document.getElementById('move_base status').innerHTML = this.action_client.omitStatus;
                 console.log('cb_status.');
-              },
-              cb_result : function(){
-
               }
           }
           ActionClient.init();
@@ -169,10 +171,6 @@
         </form>
       </div>
       <p style="text-align:center" >goal point x： <label id="goal_x">0</label>    y： <label id="goal_y">0</label></p>
-      <p style="text-align:center" >move_base/feedback x： <label id="pos_x">0</label>    y： <label id="pos_y">0</label></p>
-      <p style="text-align:center" >move_base/status： <label id="move_base status">0</label></p>
-      <p style="text-align:center" >move_base/result  </p>
-      <p style="text-align:center" >status： <label id="state">Disconnect</label></p>
     </div>
   </body>
 </html>
