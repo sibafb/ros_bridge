@@ -52,7 +52,8 @@
                 this.lisner_status.subscribe(function(fb_){ this.cb_status });
 
                 this.pushto_wp_list(6.1,0.8,1.0);
-
+                this.pushto_wp_list(-3.3,2.4,1.0);
+                
               },
               pushto_wp_list: function(x, y, w){
 
@@ -70,9 +71,17 @@
                 this.wp_list.push(target_pose)
 
               },
+              deque_and_push_wp_list(){
+                
+                ret = this.wp_list.shift()
+
+                this.wp_list.push(ret)
+
+                return ret
+              },
               send_goal : function(){
 
-                wp = this.wp_list.pop()
+                wp = this.deque_and_push_wp_list()
 
                 document.getElementById('goal_x').innerHTML = wp.position.x;
                 document.getElementById('goal_y').innerHTML = wp.position.y;
@@ -92,6 +101,18 @@
                 });
                 console.log('goal.send.');
                 this.goal.send()
+
+                this.action_client.wait_for_result(100,function(e) {
+                  if(!e) {
+                    log("Didn't receive results from action server.");
+                    return;
+                  }
+                });
+
+                var result = action_client.get_result();
+
+                log("Result:"+", "+result.sequence);  
+
               },
               cancelGoal : function(){
                 this.goal.cancel();
@@ -100,7 +121,7 @@
                 //document.getElementById('move_base status').innerHTML = this.action_client.omitStatus;
                 console.log('cb_status.');
               }
-          }
+          };
           ActionClient.init();
 
           window.onload = function(){
