@@ -102,17 +102,6 @@
                 console.log('goal.send.');
                 this.goal.send()
 
-                this.action_client.wait_for_result(100,function(e) {
-                  if(!e) {
-                    log("Didn't receive results from action server.");
-                    return;
-                  }
-                });
-
-                var result = action_client.get_result();
-
-                log("Result:"+", "+result.sequence);  
-
               },
               cancelGoal : function(){
                 this.goal.cancel();
