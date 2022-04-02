@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <title>ROS WEB Actionlib client</title>
+    <script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+  </head>
+
+  <body>
+    <script type="text/javascript">
+      if(!ActionClient){
+
+          const ros_server = 'ws://localhost:9090';
+          const actionserver_name = 'wp_navigation_action';
+
+          var ActionClient = {
+              ros : null,
+              action_client : null,
+              lisner_feedback : null,
+              lisner_status : null,
+              lisner_result : null,
+              goal : null,
+              wp_list : [],
+              
+              init : function(){
+                this.ros = new ROSLIB.Ros({url : ros_server});
+                this.ros.on('error', function(error) {
+                    document.getElementById('state').innerHTML = "Error";
+                });
+                this.ros.on('connection', function(error) {
+                    document.getElementById('state').innerHTML = "Connect";
+                });
+                this.ros.on('close', function(error) {
+                    document.getElementById('state').innerHTML = "Close";
+                });
+                this.ros.connect('ws://' + location.hostname + ':9090');
+
+                console.log('Start action client.');
+
+                this.action_client = new ROSLIB.ActionClient({
+                  ros : this.ros,
+                  serverName : actionserver_name,
+                  actionName : 'wp_navi/WpnavAction'
+                });
+                
+              },
+              start_navigation : function(){
+
+                console.log('Define pose');
+
+                this.goal = new ROSLIB.Goal({
+                  actionClient : this.action_client,
+                  goalMessage : {
+                    wp_index : 0,
+                    wp_loop : true
+                  }
+                });
+                console.log('goal.send.');
+                this.goal.send()
+              }
+          };
+          ActionClient.init();
+
+          window.onload = function(){
+          };
+          window.onunload = function(){
+            ActionClient.ros.close();
+          };
+      }
+    </script>
+
+    <style>
+    .button{
+      background:#0066FF;
+      color:white;
+      padding:1em 1em;
+      border:black 0.3px solid;ne;
+      border-radius:15px;
+      text-decoration:none;
+      font-size:1.5em;
+      margin-right:1em;
+    }
+    .start_button{
+      background:#336699;
+      color:#EEE8AA;
+      padding:1em 1em;
+      border:black 2px solid;
+      border-radius:15px;
+      text-decoration:none;
+      font-size:1.5em;
+      margin-right:1em;
+    }
+    .button:hover{
+      background:#0066CC;
+    }
+    .button:active{
+      background:#33FFFF;
+    }
+    .centor{
+      padding:1em;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateY(-50%) translateX(-50%);
+      -webkit- transform: translateY(-50%) translateX(-50%);
+    }
+    .flex{
+      display:flex;
+      justify-content:space-around;
+    }
+    .title{
+
+      text-align:center
+    }
+    </style>
+    <header>
+      <h1 class="title"> Snack served on a robot </h1>
+    </header>
+    <div class="centor">
+      <div class="flex">
+        <form action="javascript:ActionClient.start_navigation();" id="start">
+          <input type="submit" value="START" id="btn" class="button"><br/>
+        </form>
+        <form action="javascript:ActionClient.cancelGoal();" id="ui">
+          <input type="submit" value="PAUSE" id="btn" class="button"><br/>
+        </form>
+      </div>
+      <p style="text-align:center" >status： <label id="state">Disconnect</label></p>
+  </body>
+</html>
